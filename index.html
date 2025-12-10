@@ -102,6 +102,16 @@
             margin-top: -5px;
             padding-bottom: 10px;
         }
+
+        .btn-delete {
+            margin-left: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            cursor: pointer;
+        }
     </style>
 
 </head>
@@ -131,13 +141,14 @@
     <h3>🗂️ Mis metas</h3>
     <div id="listaMetas"></div>
 
+    <!-- Botón para eliminar todas las metas -->
+    <button class="btn-green" onclick="eliminarTodasMetas()">🗑️ Eliminar todas las metas</button>
+
 </div>
 
 <script>
 
     const listaMetas = document.getElementById("listaMetas");
-    <button class="btn-green" onclick="eliminarTodasMetas()">🗑️ Eliminar todas las metas</button>
-
 
     function agregarMeses(fecha, meses) {
         let f = new Date(fecha);
@@ -162,6 +173,7 @@
         card.dataset.nombre = nombre;
         card.dataset.fin = new Date(inicio).setMonth(new Date(inicio).getMonth() + parseInt(duracion));
 
+        // Aquí agregamos el botón de eliminar meta individual
         card.innerHTML = `
             <div class="meta-info">
                 <span class="meta-title">${nombre}</span>
@@ -169,6 +181,7 @@
                 <span class="meta-dates">Fin: ${fechaFin}</span>
             </div>
             <div class="icon-hourglass">⏳</div>
+            <button class="btn-delete" onclick="eliminarMeta(this)">❌</button>
         `;
 
         listaMetas.appendChild(card);
@@ -178,7 +191,6 @@
         document.getElementById("metaInicio").value = "";
         document.getElementById("metaDuracion").value = "";
     }
-
 
     // ==============================
     //   GUARDAR AUTOMÁTICO
@@ -193,16 +205,24 @@
             listaMetas.innerHTML = guardadas;
         }
     });
-    function eliminarTodasMetas() {
-    localStorage.removeItem("metasGuardadas"); // Borra todas las metas guardadas
-    listaMetas.innerHTML = ""; // Limpia la lista de la pantalla
-}
 
+    // ==============================
+    //   ELIMINAR METAS
+    // ==============================
+    function eliminarTodasMetas() {
+        localStorage.removeItem("metasGuardadas"); // Borra todas las metas guardadas
+        listaMetas.innerHTML = ""; // Limpia la lista de la pantalla
+    }
+
+    function eliminarMeta(boton) {
+        const card = boton.parentElement; // obtiene la tarjeta
+        card.remove(); // elimina la tarjeta de la pantalla
+        guardarMetas(); // actualiza localStorage
+    }
 
     // Observador para guardar cambios
     const observer = new MutationObserver(guardarMetas);
     observer.observe(listaMetas, { childList: true, subtree: true });
-
 
     // ==============================
     //   NOTIFICACIONES AUTOMÁTICAS
@@ -245,4 +265,6 @@
 
 </body>
 </html>
+
+
 
