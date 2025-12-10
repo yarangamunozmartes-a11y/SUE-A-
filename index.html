@@ -136,6 +136,8 @@
 <script>
 
     const listaMetas = document.getElementById("listaMetas");
+    <button class="btn-green" onclick="eliminarTodasMetas()">🗑️ Eliminar todas las metas</button>
+
 
     function agregarMeses(fecha, meses) {
         let f = new Date(fecha);
@@ -191,6 +193,11 @@
             listaMetas.innerHTML = guardadas;
         }
     });
+    function eliminarTodasMetas() {
+    localStorage.removeItem("metasGuardadas"); // Borra todas las metas guardadas
+    listaMetas.innerHTML = ""; // Limpia la lista de la pantalla
+}
+
 
     // Observador para guardar cambios
     const observer = new MutationObserver(guardarMetas);
@@ -238,3 +245,4 @@
 
 </body>
 </html>
+
