@@ -141,8 +141,9 @@
     <h3>🗂️ Mis metas</h3>
     <div id="listaMetas"></div>
 
-    <!-- Botón para eliminar todas las metas -->
+    <!-- Botones para borrar -->
     <button class="btn-green" onclick="eliminarTodasMetas()">🗑️ Eliminar todas las metas</button>
+    <button class="btn-green" onclick="limpiarLocalStorage()">🧹 Limpiar almacenamiento</button>
 
 </div>
 
@@ -173,7 +174,6 @@
         card.dataset.nombre = nombre;
         card.dataset.fin = new Date(inicio).setMonth(new Date(inicio).getMonth() + parseInt(duracion));
 
-        // Botón de eliminar meta individual
         card.innerHTML = `
             <div class="meta-info">
                 <span class="meta-title">${nombre}</span>
@@ -193,16 +193,10 @@
         document.getElementById("metaDuracion").value = "";
     }
 
-    // ==============================
-    //   GUARDAR AUTOMÁTICO
-    // ==============================
     function guardarMetas() {
         localStorage.setItem("metasGuardadas", listaMetas.innerHTML);
     }
 
-    // ==============================
-    //   ASIGNAR EVENTOS DE BORRAR
-    // ==============================
     function asignarEventosEliminar() {
         document.querySelectorAll(".btn-delete").forEach(boton => {
             boton.onclick = function() {
@@ -215,37 +209,38 @@
         });
     }
 
-    window.addEventListener("load", () => {
-        const guardadas = localStorage.getItem("metasGuardadas");
-        if (guardadas) {
-            listaMetas.innerHTML = guardadas;
-            asignarEventosEliminar(); // ahora los botones ❌ funcionan
-        }
-    });
-
-    // ==============================
-    //   ELIMINAR TODAS LAS METAS
-    // ==============================
     function eliminarTodasMetas() {
         localStorage.removeItem("metasGuardadas");
         listaMetas.innerHTML = "";
     }
 
+    // NUEVO: limpiar todo localStorage
+    function limpiarLocalStorage() {
+        localStorage.clear();
+        listaMetas.innerHTML = "";
+        alert("LocalStorage limpiado. La app está vacía.");
+    }
+
+    window.addEventListener("load", () => {
+        const guardadas = localStorage.getItem("metasGuardadas");
+        if (guardadas) {
+            listaMetas.innerHTML = guardadas;
+            asignarEventosEliminar();
+        }
+    });
+
     // Observador para guardar cambios
     const observer = new MutationObserver(guardarMetas);
     observer.observe(listaMetas, { childList: true, subtree: true });
 
-    // ==============================
-    //   NOTIFICACIONES AUTOMÁTICAS
-    // ==============================
     function verificarFechas() {
         document.querySelectorAll(".meta-card").forEach(meta => {
             const fechaFin = new Date(parseInt(meta.dataset.fin));
             const ahora = new Date();
-            const diasFaltantes = Math.ceil((fechaFin - ahora) / (1000 * 60 * 60 * 24));
+            const diasFaltantes = Math.ceil((fechaFin - ahora) / (1000*60*60*24));
 
-            if (diasFaltantes === 2) {
-                if (window.electronAPI) {
+            if(diasFaltantes === 2){
+                if(window.electronAPI){
                     window.electronAPI.enviarNotificacion(
                         "Tu meta está por terminar",
                         `Solo faltan 2 días para completar: ${meta.dataset.nombre}`
@@ -257,19 +252,17 @@
         });
     }
 
-    setInterval(verificarFechas, 3600000); // cada hora
+    setInterval(verificarFechas, 3600000);
 
-    // ==============================
-    //   REGISTRAR SERVICE WORKER PWA
-    // ==============================
-    if ('serviceWorker' in navigator) {
+    if('serviceWorker' in navigator){
         navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registrado'))
-        .catch(err => console.log('Error SW:', err));
+        .then(() => console.log("Service Worker registrado"))
+        .catch(err => console.log("Error SW:", err));
     }
 
 </script>
 
 </body>
 </html>
+
 
