@@ -173,7 +173,7 @@
         card.dataset.nombre = nombre;
         card.dataset.fin = new Date(inicio).setMonth(new Date(inicio).getMonth() + parseInt(duracion));
 
-        // Aquí agregamos el botón de eliminar meta individual
+        // Botón de eliminar meta individual
         card.innerHTML = `
             <div class="meta-info">
                 <span class="meta-title">${nombre}</span>
@@ -210,14 +210,16 @@
     //   ELIMINAR METAS
     // ==============================
     function eliminarTodasMetas() {
-        localStorage.removeItem("metasGuardadas"); // Borra todas las metas guardadas
-        listaMetas.innerHTML = ""; // Limpia la lista de la pantalla
+        localStorage.removeItem("metasGuardadas");
+        listaMetas.innerHTML = "";
     }
 
     function eliminarMeta(boton) {
-        const card = boton.parentElement; // obtiene la tarjeta
-        card.remove(); // elimina la tarjeta de la pantalla
-        guardarMetas(); // actualiza localStorage
+        const card = boton.closest('.meta-card'); // CORRECCIÓN: usa closest()
+        if(card) {
+            card.remove();
+            guardarMetas();
+        }
     }
 
     // Observador para guardar cambios
@@ -229,14 +231,11 @@
     // ==============================
     function verificarFechas() {
         document.querySelectorAll(".meta-card").forEach(meta => {
-
             const fechaFin = new Date(parseInt(meta.dataset.fin));
             const ahora = new Date();
-
             const diasFaltantes = Math.ceil((fechaFin - ahora) / (1000 * 60 * 60 * 24));
 
             if (diasFaltantes === 2) {
-                // Solo funciona si estás usando Electron, para PWA puedes reemplazar con alert()
                 if (window.electronAPI) {
                     window.electronAPI.enviarNotificacion(
                         "Tu meta está por terminar",
@@ -246,7 +245,6 @@
                     console.log(`Notificación: Solo faltan 2 días para: ${meta.dataset.nombre}`);
                 }
             }
-
         });
     }
 
@@ -265,6 +263,3 @@
 
 </body>
 </html>
-
-
-
