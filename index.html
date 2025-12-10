@@ -181,11 +181,12 @@
                 <span class="meta-dates">Fin: ${fechaFin}</span>
             </div>
             <div class="icon-hourglass">⏳</div>
-            <button class="btn-delete" onclick="eliminarMeta(this)">❌</button>
+            <button class="btn-delete">❌</button>
         `;
 
         listaMetas.appendChild(card);
         guardarMetas();
+        asignarEventosEliminar();
 
         document.getElementById("metaNombre").value = "";
         document.getElementById("metaInicio").value = "";
@@ -199,27 +200,35 @@
         localStorage.setItem("metasGuardadas", listaMetas.innerHTML);
     }
 
+    // ==============================
+    //   ASIGNAR EVENTOS DE BORRAR
+    // ==============================
+    function asignarEventosEliminar() {
+        document.querySelectorAll(".btn-delete").forEach(boton => {
+            boton.onclick = function() {
+                const card = boton.closest('.meta-card');
+                if(card) {
+                    card.remove();
+                    guardarMetas();
+                }
+            }
+        });
+    }
+
     window.addEventListener("load", () => {
         const guardadas = localStorage.getItem("metasGuardadas");
         if (guardadas) {
             listaMetas.innerHTML = guardadas;
+            asignarEventosEliminar(); // ahora los botones ❌ funcionan
         }
     });
 
     // ==============================
-    //   ELIMINAR METAS
+    //   ELIMINAR TODAS LAS METAS
     // ==============================
     function eliminarTodasMetas() {
         localStorage.removeItem("metasGuardadas");
         listaMetas.innerHTML = "";
-    }
-
-    function eliminarMeta(boton) {
-        const card = boton.closest('.meta-card'); // CORRECCIÓN: usa closest()
-        if(card) {
-            card.remove();
-            guardarMetas();
-        }
     }
 
     // Observador para guardar cambios
@@ -263,3 +272,5 @@
 
 </body>
 </html>
+
+
